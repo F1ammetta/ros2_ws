@@ -1,0 +1,5 @@
+  File "/home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg/controller.py", line 23
+    msg.linear = Vector3(x: 1,y:0,z:0)
+                          ^
+SyntaxError: invalid syntax
+

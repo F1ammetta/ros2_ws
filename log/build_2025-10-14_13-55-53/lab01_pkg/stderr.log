@@ -1,0 +1,5 @@
+  File "/home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg/controller.py", line 43
+    if self.i - self._last_i == self._n
+                                       ^
+SyntaxError: expected ':'
+

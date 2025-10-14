@@ -1,0 +1,26 @@
+[0.512s] Invoking command in '/home/fiammetta/ros-stuff/ros2_ws/src/lab01_pkg': PYTHONPATH=/home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lab01_pkg build --build-base /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/build install --record /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/install.log --single-version-externally-managed install_data
+[0.713s] running egg_info
+[0.713s] writing ../../build/lab01_pkg/lab01_pkg.egg-info/PKG-INFO
+[0.713s] writing dependency_links to ../../build/lab01_pkg/lab01_pkg.egg-info/dependency_links.txt
+[0.713s] writing entry points to ../../build/lab01_pkg/lab01_pkg.egg-info/entry_points.txt
+[0.714s] writing requirements to ../../build/lab01_pkg/lab01_pkg.egg-info/requires.txt
+[0.714s] writing top-level names to ../../build/lab01_pkg/lab01_pkg.egg-info/top_level.txt
+[0.715s] reading manifest file '../../build/lab01_pkg/lab01_pkg.egg-info/SOURCES.txt'
+[0.715s] adding license file 'LICENSE'
+[0.716s] writing manifest file '../../build/lab01_pkg/lab01_pkg.egg-info/SOURCES.txt'
+[0.716s] running build
+[0.716s] running build_py
+[0.716s] copying lab01_pkg/localization.py -> /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/build/lib/lab01_pkg
+[0.716s] running install
+[0.716s] running install_lib
+[0.717s] copying /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/build/lib/lab01_pkg/localization.py -> /home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg
+[0.717s] byte-compiling /home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg/localization.py to localization.cpython-310.pyc
+[0.717s] running install_data
+[0.718s] running install_egg_info
+[0.719s] removing '/home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[0.719s] Copying ../../build/lab01_pkg/lab01_pkg.egg-info to /home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages/lab01_pkg-0.0.0-py3.10.egg-info
+[0.719s] running install_scripts
+[0.736s] Installing controller script to /home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/lab01_pkg
+[0.736s] Installing localization script to /home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/lab01_pkg
+[0.737s] writing list of installed files to '/home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/install.log'
+[0.757s] Invoked command in '/home/fiammetta/ros-stuff/ros2_ws/src/lab01_pkg' returned '0': PYTHONPATH=/home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/fiammetta/ros-stuff/ros2_ws/install/lab01_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/lab01_pkg build --build-base /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/build install --record /home/fiammetta/ros-stuff/ros2_ws/build/lab01_pkg/install.log --single-version-externally-managed install_data
