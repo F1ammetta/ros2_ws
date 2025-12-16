@@ -1,8 +1,10 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
+from landmark_msgs.msg import LandmarkArray
 import numpy as np
 import math
 
@@ -154,10 +156,14 @@ class DWANode(Node):
     def __init__(self):
         super().__init__('dwa_node')
         self.odom_subscriber = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
-        self.scan_subscriber = self.create_subscription(LaserScan, '/scan', self.scan_callback, 10)
-        self.goal_subscriber = self.create_subscription(Odometry, '/dynamic_goal_pose', self.goal_callback, 10)
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            depth=10
+        )
+        self.scan_subscriber = self.create_subscription(LaserScan, '/scan', self.scan_callback, qos_profile)
+        self.goal_subscriber = self.create_subscription(LandmarkArray, '/camera/landmarks', self.goal_callback, 10)
         self.cmd_vel_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.feedback_publisher = self.create_publisher(Odometry, '/feedback', 10)
         
         self.timer = self.create_timer(1.0 / 15.0, self.timer_callback)
         self.timer_started = False
@@ -171,7 +177,7 @@ class DWANode(Node):
             init_pose=np.array([0.0, 0.0, 0.0]),
             max_linear_acc=0.5,
             max_ang_acc=math.pi/2,
-            max_lin_vel=0.3,
+            max_lin_vel=0.26,
             min_lin_vel=0.0,
             max_ang_vel=2.82,
             min_ang_vel=-2.82,
@@ -184,15 +190,15 @@ class DWANode(Node):
             v_samples=10,
             w_samples=20,
             goal_dist_tol=0.2,
-            collision_tol=0.15,
-            weight_angle=0.06,
+            collision_tol=0.3,
+            weight_angle=0.1,
             weight_vel=0.2,
-            weight_obs=0.1,
-            weight_target_dist=0.1,
+            weight_obs=0.2,
+            weight_target_dist=0.09,
             robot=robot
         )
         self.control_steps = 0
-        self.max_control_steps = 500
+        self.max_control_steps = 1000
 
     def odom_callback(self, msg):
         self.get_logger().info('Odom received', once=True)
@@ -209,8 +215,29 @@ class DWANode(Node):
 
     def goal_callback(self, msg):
         self.get_logger().info('Goal received', once=True)
-        self.goal_pose = np.array([msg.pose.pose.position.x, msg.pose.pose.position.y])
-        self.check_and_start_timer()
+        if len(msg.landmarks) > 0:
+            landmark = msg.landmarks[0]
+            
+            # Get the robot's current pose
+            robot_x = self.robot_pose[0]
+            robot_y = self.robot_pose[1]
+            robot_theta = self.robot_pose[2]
+
+            # Get the range and bearing from the landmark
+            range_ = landmark.range
+            bearing = landmark.bearing
+
+            # Transform the range and bearing to X-Y coordinates in the robot's frame
+            goal_x_robot = range_ * np.cos(bearing)
+            goal_y_robot = range_ * np.sin(bearing)
+
+            # Transform the X-Y coordinates from the robot's frame to the odom frame
+            goal_x_odom = robot_x + goal_x_robot * np.cos(robot_theta) - goal_y_robot * np.sin(robot_theta)
+            goal_y_odom = robot_y + goal_x_robot * np.sin(robot_theta) + goal_y_robot * np.cos(robot_theta)
+
+            # Set the goal pose
+            self.goal_pose = np.array([goal_x_odom, goal_y_odom])
+            self.check_and_start_timer()
 
     def check_and_start_timer(self):
         if self.robot_pose is not None and self.scan_data is not None and self.goal_pose is not None:
@@ -225,8 +252,6 @@ class DWANode(Node):
         if self.robot_pose is None or self.scan_data is None or self.goal_pose is None:
             return
 
-        self.process_scan()
-        
         dist_to_goal = np.linalg.norm(self.robot_pose[0:2] - self.goal_pose)
         if dist_to_goal < self.dwa.goal_dist_tol:
             self.get_logger().info("Goal reached!")
@@ -255,9 +280,6 @@ class DWANode(Node):
         self.dwa.robot.update_state(u, self.dwa.dt)
 
         if self.control_steps % 50 == 0:
-            feedback_msg = Odometry()
-            feedback_msg.pose.pose.position.x = dist_to_goal
-            self.feedback_publisher.publish(feedback_msg)
             self.get_logger().info(f"Current distance to goal: {dist_to_goal}")
 
         self.control_steps += 1
@@ -270,7 +292,7 @@ class DWANode(Node):
         ranges[np.isinf(ranges)] = self.scan_data.range_max
         ranges = np.clip(ranges, self.scan_data.range_min, 3.5)
         
-        num_ranges = 20
+        num_ranges = 60
         angle_increment = len(ranges) / num_ranges
         filtered_ranges = [np.min(ranges[int(i*angle_increment):int((i+1)*angle_increment)]) for i in range(num_ranges)]
         
